@@ -1,0 +1,7 @@
+date,store_id,revenue,orders,customers,avg_ticket,channel,weather,promo_flag,source_name,uploaded_at
+2026-01-01,S001,1520000,184,176,8636,offline,sunny,0,sales_daily.csv,2026-03-15T09:00:00+09:00
+2026-01-01,S002,1310000,161,154,8506,delivery,cloudy,1,sales_daily.csv,2026-03-15T09:00:00+09:00
+2026-01-01,S003,980000,129,121,8099,offline,rain,0,sales_daily.csv,2026-03-15T09:00:00+09:00
+2026-01-02,S001,1490000,179,171,8713,offline,cloudy,0,sales_daily.csv,2026-03-15T09:00:00+09:00
+2026-01-02,S002,1260000,156,149,8456,delivery,rain,0,sales_daily.csv,2026-03-15T09:00:00+09:00
+2026-01-02,S003,1020000,134,126,8095,offline,sunny,1,sales_daily.csv,2026-03-15T09:00:00+09:00

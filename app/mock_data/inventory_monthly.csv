@@ -1,0 +1,5 @@
+month,store_id,item_id,system_qty,actual_qty,loss_rate,source_name,uploaded_at
+2026-02,S001,I001,120,112,0.067,inventory_monthly.csv,2026-03-15T09:00:00+09:00
+2026-02,S001,I002,90,80,0.111,inventory_monthly.csv,2026-03-15T09:00:00+09:00
+2026-02,S002,I010,150,145,0.033,inventory_monthly.csv,2026-03-15T09:00:00+09:00
+2026-02,S003,I014,100,89,0.110,inventory_monthly.csv,2026-03-15T09:00:00+09:00

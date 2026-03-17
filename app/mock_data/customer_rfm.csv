@@ -1,0 +1,7 @@
+customer_id,store_id,recency,frequency,monetary,last_visit_days,coupon_use_rate,churned,source_name,uploaded_at
+C001,S001,7,12,186000,7,0.42,0,customer_rfm.csv,2026-03-15T09:00:00+09:00
+C002,S001,33,4,42000,33,0.10,1,customer_rfm.csv,2026-03-15T09:00:00+09:00
+C003,S002,21,6,78000,21,0.20,1,customer_rfm.csv,2026-03-15T09:00:00+09:00
+C004,S002,5,18,255000,5,0.55,0,customer_rfm.csv,2026-03-15T09:00:00+09:00
+C005,S003,14,8,92000,14,0.25,0,customer_rfm.csv,2026-03-15T09:00:00+09:00
+C006,S003,47,2,19000,47,0.00,1,customer_rfm.csv,2026-03-15T09:00:00+09:00

@@ -1,0 +1,5 @@
+date,store_id,hour,sales,staff_actual,staff_recommended,source_name,uploaded_at
+2026-03-01,S001,11,180000,3,4,staffing_hourly.csv,2026-03-15T09:00:00+09:00
+2026-03-01,S001,12,320000,4,5,staffing_hourly.csv,2026-03-15T09:00:00+09:00
+2026-03-01,S002,18,410000,5,4,staffing_hourly.csv,2026-03-15T09:00:00+09:00
+2026-03-01,S003,19,290000,2,4,staffing_hourly.csv,2026-03-15T09:00:00+09:00

@@ -1,0 +1,5 @@
+review_id,store_id,rating,review_text,sentiment_label,source_name,uploaded_at
+R001,S001,5,"직원이 친절하고 음식이 빨리 나와요",positive,reviews.csv,2026-03-15T09:00:00+09:00
+R002,S001,2,"배달이 늦고 음식이 식어서 왔어요",negative,reviews.csv,2026-03-15T09:00:00+09:00
+R003,S002,3,"무난했지만 재방문 의사는 보통입니다",neutral,reviews.csv,2026-03-15T09:00:00+09:00
+R004,S003,1,"포인트 적립이 누락됐고 응대가 아쉬웠습니다",negative,reviews.csv,2026-03-15T09:00:00+09:00

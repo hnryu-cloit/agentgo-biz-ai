@@ -1,0 +1,5 @@
+menu_id,store_id,price,cost,quantity,margin_rate,category,source_name,uploaded_at
+M001,S001,8500,5100,620,0.40,set,menu_metrics.csv,2026-03-15T09:00:00+09:00
+M002,S001,4200,2600,810,0.38,side,menu_metrics.csv,2026-03-15T09:00:00+09:00
+M003,S002,9900,6800,410,0.31,main,menu_metrics.csv,2026-03-15T09:00:00+09:00
+M004,S003,7200,5000,290,0.31,main,menu_metrics.csv,2026-03-15T09:00:00+09:00
