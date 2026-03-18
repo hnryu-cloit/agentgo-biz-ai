@@ -204,6 +204,98 @@ class AnalysisResponse(BaseModel):
     cold_start_mode: bool = False
 
 
+class StoreIntelligenceRequest(BaseModel):
+    store_id: str
+    sales_input: SalesDiagnosticRequest
+    churn_input: ChurnInsightRequest
+    staffing_inputs: list[StaffingOptimizationRequest] = Field(default_factory=list)
+    roi_rate: float = 0.0
+    avg_order_value: float = 0.0
+    recent_visit_count: int = 0
+
+
+class StoreIntelligenceResponse(BaseModel):
+    store_id: str
+    summary: str
+    priority_actions: list[str]
+    sales: AnalysisResponse
+    churn: AnalysisResponse
+    staffing: list[StaffingOptimizationResponse]
+    version: VersionTag
+
+
+class CampaignBepSimulationRequest(BaseModel):
+    store_id: str
+    segment_name: str
+    channel: Literal["sms", "push", "kakao"]
+    offer_type: Literal["discount", "coupon", "free_item"]
+    offer_value: float = Field(ge=0)
+    target_customers: int = Field(ge=1)
+    promo_days: int = Field(ge=1, le=60)
+    fixed_cost: float = Field(ge=0)
+    menu_name: str
+    menu_price: float = Field(ge=0)
+    margin_rate: float = Field(ge=0, le=1)
+    daily_avg_qty: float = Field(ge=0)
+    avg_order_value: float = Field(ge=0)
+    recent_visit_count: int = Field(ge=0)
+    return_rate: float = Field(ge=0, le=1)
+    roi_rate: float = 0.0
+    source_name: str
+    uploaded_at: datetime
+
+
+class CampaignBepSimulationResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
+    store_id: str
+    model_name: str
+    summary: str
+    expected_open_rate: float
+    expected_conversion_rate: float
+    expected_incremental_orders: int
+    expected_incremental_revenue: float
+    expected_incremental_profit: float
+    break_even_orders: int
+    break_even_revenue: float
+    break_even_probability: float
+    expected_roi: float
+    confidence: float
+    action_guide: list[str]
+    evidence: list[Evidence]
+    version: VersionTag
+
+
+class CampaignUpliftRequest(BaseModel):
+    store_id: str
+    segment_name: str
+    channel: Literal["sms", "push", "kakao"]
+    target_customers: int = Field(ge=1)
+    discount_rate: float = Field(ge=0, le=1)
+    avg_order_value: float = Field(ge=0)
+    recent_visit_count: int = Field(ge=0)
+    return_rate: float = Field(ge=0, le=1)
+    roi_rate: float = 0.0
+    source_name: str
+    uploaded_at: datetime
+
+
+class CampaignUpliftResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
+    store_id: str
+    model_name: str
+    summary: str
+    expected_incremental_orders: int
+    expected_incremental_revenue: float
+    expected_uplift_rate: float
+    expected_redemption_rate: float
+    confidence: float
+    action_guide: list[str]
+    evidence: list[Evidence]
+    version: VersionTag
+
+
 class StrategyAction(BaseModel):
     title: str
     expected_effect: str

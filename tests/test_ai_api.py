@@ -29,6 +29,61 @@ def test_sales_diagnostics_returns_evidence_and_version() -> None:
     assert body["version"]["agent"] == "analysis"
 
 
+def test_store_intelligence_combines_sales_churn_and_staffing() -> None:
+    response = client.post(
+        "/api/v1/analysis/store-intelligence",
+        json={
+            "store_id": "S001",
+            "roi_rate": 42.1,
+            "avg_order_value": 128000,
+            "recent_visit_count": 481,
+            "sales_input": {
+                "store_id": "S001",
+                "data_window": {"start": "2026-03-01", "end": "2026-03-14"},
+                "record_count": 120,
+                "source_name": "sales.csv",
+                "uploaded_at": "2026-03-15T09:00:00+09:00",
+                "revenue_delta_pct": -12.4,
+                "customer_delta_pct": -9.1,
+                "avg_ticket_delta_pct": -2.6,
+                "channel_delta_pct": -4.0,
+                "weather_impact_pct": -3.4,
+            },
+            "churn_input": {
+                "store_id": "S001",
+                "data_window": {"start": "2026-03-01", "end": "2026-03-14"},
+                "record_count": 120,
+                "source_name": "customers.csv",
+                "uploaded_at": "2026-03-15T09:00:00+09:00",
+                "at_risk_customers": 33,
+                "delayed_visit_days": 21,
+                "avg_visit_cycle_days": 12,
+                "coupon_redemption_rate": 0.18,
+            },
+            "staffing_inputs": [
+                {
+                    "store_id": "S001",
+                    "date": "2026-03-01",
+                    "hour": 12,
+                    "sales": 320000,
+                    "staff_actual": 3,
+                    "staff_recommended": 5,
+                    "source_name": "staffing_hourly.csv",
+                    "uploaded_at": "2026-03-15T09:00:00+09:00",
+                }
+            ],
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["store_id"] == "S001"
+    assert body["sales"]["analysis_type"] == "sales_diagnostics"
+    assert body["churn"]["analysis_type"] == "churn_insight"
+    assert len(body["staffing"]) == 1
+    assert len(body["priority_actions"]) >= 3
+
+
 def test_retention_strategy_builds_actions() -> None:
     response = client.post(
         "/api/v1/strategy/retention-offer",

@@ -38,6 +38,22 @@ STRATEGY_PROMPTS = {
         "- 권장 가격 범위를 포함\n"
         "입력:\n{context}\n"
     ),
+    "campaign_bep_simulation": (
+        "당신은 CRM 캠페인 전략가다. 아래 실데이터와 가정치를 바탕으로 캠페인 손익분기 가능성을 설명하라.\n"
+        "제약:\n"
+        "- 기대 효과를 과장하지 말 것\n"
+        "- 손익분기 주문 수와 예상 전환을 함께 언급할 것\n"
+        "- 실행 전에 점검할 조건 1개 이상 포함할 것\n"
+        "입력:\n{context}\n"
+    ),
+    "campaign_uplift_estimate": (
+        "당신은 CRM uplift 분석가다. 아래 입력을 바탕으로 캠페인 미집행 대비 추가 효과를 설명하라.\n"
+        "제약:\n"
+        "- 기대 uplift와 추가 주문을 함께 언급할 것\n"
+        "- 추정치임을 분명히 할 것\n"
+        "- 사후 검증 포인트를 1개 이상 포함할 것\n"
+        "입력:\n{context}\n"
+    ),
 }
 
 OPERATIONS_PROMPTS = {

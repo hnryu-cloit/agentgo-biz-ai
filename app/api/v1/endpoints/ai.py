@@ -7,6 +7,10 @@ from app.schemas.ai import (
     AnalysisResponse,
     CampaignExecutionRequest,
     CampaignExecutionResponse,
+    CampaignBepSimulationRequest,
+    CampaignBepSimulationResponse,
+    CampaignUpliftRequest,
+    CampaignUpliftResponse,
     CampaignTargetValidationRequest,
     CampaignTargetValidationResponse,
     ChurnInsightRequest,
@@ -20,6 +24,8 @@ from app.schemas.ai import (
     SalesDiagnosticRequest,
     StaffingOptimizationRequest,
     StaffingOptimizationResponse,
+    StoreIntelligenceRequest,
+    StoreIntelligenceResponse,
     StrategyResponse,
     WorkflowRequest,
     WorkflowResponse,
@@ -30,6 +36,7 @@ from app.services.governance_service import GovernanceService
 from app.services.ocr_service import OCRService
 from app.services.operations_service import OperationsService
 from app.services.strategy_service import StrategyService
+from app.services.store_intelligence_service import StoreIntelligenceService
 from app.services.workflow_service import WorkflowService
 
 router = APIRouter()
@@ -44,6 +51,10 @@ workflow_service = WorkflowService(
     analysis_service=analysis_service,
     strategy_service=strategy_service,
     execution_service=execution_service,
+    operations_service=operations_service,
+)
+store_intelligence_service = StoreIntelligenceService(
+    analysis_service=analysis_service,
     operations_service=operations_service,
 )
 
@@ -68,6 +79,11 @@ async def anomaly_explain(payload: AnomalyExplanationRequest) -> AnalysisRespons
     return analysis_service.anomaly_explanation(payload)
 
 
+@router.post("/analysis/store-intelligence", response_model=StoreIntelligenceResponse)
+async def store_intelligence(payload: StoreIntelligenceRequest) -> StoreIntelligenceResponse:
+    return store_intelligence_service.analyze(payload)
+
+
 @router.post("/strategy/retention-offer", response_model=StrategyResponse)
 async def retention_offer(payload: RetentionOfferRequest) -> StrategyResponse:
     return strategy_service.retention_offer(payload)
@@ -90,6 +106,20 @@ async def execute_campaign(
     payload: CampaignExecutionRequest,
 ) -> CampaignExecutionResponse:
     return execution_service.execute_campaign(payload)
+
+
+@router.post("/campaigns/simulate-bep", response_model=CampaignBepSimulationResponse)
+async def simulate_campaign_bep(
+    payload: CampaignBepSimulationRequest,
+) -> CampaignBepSimulationResponse:
+    return strategy_service.campaign_bep_simulation(payload)
+
+
+@router.post("/campaigns/predict-uplift", response_model=CampaignUpliftResponse)
+async def predict_campaign_uplift(
+    payload: CampaignUpliftRequest,
+) -> CampaignUpliftResponse:
+    return strategy_service.campaign_uplift_estimate(payload)
 
 
 @router.post("/operations/staffing", response_model=StaffingOptimizationResponse)
