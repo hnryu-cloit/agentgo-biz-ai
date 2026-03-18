@@ -1,75 +1,43 @@
-from __future__ import annotations
+import pandas as pd
+import numpy as np
+from typing import List, Dict, Any
 
-from dataclasses import dataclass
+class SalesTrendFeature:
+    """
+    시간대별 매출 추이 분석 및 피크 타임 식별
+    """
+    
+    @staticmethod
+    def analyze_hourly_trends(sales_df: pd.DataFrame) -> Dict[str, Any]:
+        """
+        시간대별 매출 데이터를 분석하여 해석된 정보를 반환
+        """
+        if sales_df.empty:
+            return {}
 
-
-@dataclass
-class SalesRecord:
-    date: str
-    store_id: str
-    revenue: float
-    orders: float
-    customers: float
-    avg_ticket: float
-    channel: str
-    weather: str
-    promo_flag: int
-
-
-def pct_change(previous: float, current: float) -> float:
-    if previous == 0:
-        return 0.0
-    return round(((current - previous) / previous) * 100, 2)
-
-
-def factor_scores_from_deltas(
-    customer_delta_pct: float,
-    avg_ticket_delta_pct: float,
-    channel_delta_pct: float,
-    weather_impact_pct: float,
-) -> dict[str, float]:
-    return {
-        "customer_count": abs(customer_delta_pct),
-        "avg_ticket": abs(avg_ticket_delta_pct),
-        "channel_mix": abs(channel_delta_pct),
-        "weather": abs(weather_impact_pct),
-    }
-
-
-def sales_factor_breakdown(records: list[SalesRecord]) -> dict[str, object]:
-    if len(records) < 2:
+        # 1. 시간대별 집계
+        hourly_stats = sales_df.groupby('hour')['revenue'].agg(['mean', 'sum', 'count']).reset_index()
+        
+        # 2. 피크 타임 식별 (상위 20% 매출 시간대)
+        threshold = hourly_stats['sum'].quantile(0.8)
+        peak_hours = hourly_stats[hourly_stats['sum'] >= threshold]['hour'].tolist()
+        
+        # 3. 추세 분석 (이동 평균 등을 통한 평활화)
+        hourly_stats['moving_avg'] = hourly_stats['sum'].rolling(window=3, center=True, min_periods=1).mean()
+        
+        # 4. 상태 판별
+        total_rev = hourly_stats['sum'].sum()
+        avg_rev = hourly_stats['sum'].mean()
+        
+        # 가장 매출이 높은 시간과 낮은 시간 격차
+        max_hour = hourly_stats.loc[hourly_stats['sum'].idxmax()]
+        min_hour = hourly_stats.loc[hourly_stats['sum'].idxmin()]
+        
         return {
-            "dominant_factor": "insufficient_data",
-            "top_factors": ["insufficient_data"],
-            "revenue_delta_pct": 0.0,
+            "hourly_data": hourly_stats.to_dict(orient='records'),
+            "peak_hours": peak_hours,
+            "best_hour": int(max_hour['hour']),
+            "worst_hour": int(min_hour['hour']),
+            "volatility": float(hourly_stats['sum'].std() / avg_rev) if avg_rev > 0 else 0,
+            "summary": f"오늘의 주요 피크 타임은 {', '.join(map(str, peak_hours))}시이며, {int(max_hour['hour'])}시에 최대 매출이 발생했습니다."
         }
-
-    midpoint = len(records) // 2
-    previous = records[:midpoint]
-    current = records[midpoint:]
-
-    prev_revenue = sum(item.revenue for item in previous) / len(previous)
-    curr_revenue = sum(item.revenue for item in current) / len(current)
-    prev_customers = sum(item.customers for item in previous) / len(previous)
-    curr_customers = sum(item.customers for item in current) / len(current)
-    prev_avg_ticket = sum(item.avg_ticket for item in previous) / len(previous)
-    curr_avg_ticket = sum(item.avg_ticket for item in current) / len(current)
-
-    rainy_previous = sum(1 for item in previous if item.weather == "rain") / len(previous)
-    rainy_current = sum(1 for item in current if item.weather == "rain") / len(current)
-    promo_previous = sum(item.promo_flag for item in previous) / len(previous)
-    promo_current = sum(item.promo_flag for item in current) / len(current)
-
-    factor_scores = {
-        "customer_count": abs(pct_change(prev_customers, curr_customers)),
-        "avg_ticket": abs(pct_change(prev_avg_ticket, curr_avg_ticket)),
-        "weather": abs((rainy_current - rainy_previous) * 100),
-        "promotion_mix": abs((promo_current - promo_previous) * 100),
-    }
-    top_factors = sorted(factor_scores, key=factor_scores.get, reverse=True)[:3]
-
-    return {
-        "dominant_factor": top_factors[0],
-        "top_factors": top_factors,
-        "revenue_delta_pct": pct_change(prev_revenue, curr_revenue),
-    }
