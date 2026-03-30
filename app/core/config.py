@@ -7,7 +7,9 @@ class Settings(BaseSettings):
 
     app_name: str = Field(default="AgentGo Biz AI")
     app_version: str = Field(default="0.1.0")
-    cors_origins: str = Field(default="http://localhost:5173,http://localhost:3000")
+    cors_origins: str = Field(
+        default="http://localhost:5174,http://127.0.0.1:5174,http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000"
+    )
     min_analysis_days: int = Field(default=14)
     min_analysis_records: int = Field(default=50)
     pii_masking_enabled: bool = Field(default=True)
