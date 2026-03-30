@@ -1,6 +1,58 @@
+from __future__ import annotations
+
 import pandas as pd
 import numpy as np
-from typing import List, Dict, Any
+from dataclasses import dataclass
+from typing import List, Dict, Any, Tuple
+
+
+@dataclass
+class MenuFeatures:
+    menu_id: str
+    store_id: str
+    price: int
+    cost: float
+    quantity: float
+    margin_rate: float
+    category: str
+
+
+def pricing_signal(features: MenuFeatures) -> str:
+    """마진율과 판매량 기반 가격 조정 신호 산출"""
+    if features.margin_rate < 0.25:
+        return "raise_price"
+    if features.margin_rate > 0.55 and features.quantity < 50:
+        return "lower_price"
+    if features.margin_rate < 0.40 and features.quantity > 200:
+        return "raise_price"
+    return "hold"
+
+
+def classify_menu_action(features: MenuFeatures, signal: str) -> str:
+    """가격 신호 + 마진율 기반 전략 액션 분류"""
+    if signal == "raise_price":
+        return "price_up_test"
+    if features.margin_rate < 0.20:
+        return "cost_review"
+    if features.quantity > 300 and features.margin_rate < 0.35:
+        return "bundle_promotion"
+    return "maintain"
+
+
+def price_adjustment_band(features: MenuFeatures) -> Tuple[int, int]:
+    """권장 가격 범위 계산"""
+    signal = pricing_signal(features)
+    if signal == "raise_price":
+        low = int(features.price * 1.05)
+        high = int(features.price * 1.15)
+    elif signal == "lower_price":
+        low = int(features.price * 0.90)
+        high = int(features.price * 0.98)
+    else:
+        low = features.price
+        high = int(features.price * 1.05)
+    return low, high
+
 
 class MenuEngineeringFeature:
     """

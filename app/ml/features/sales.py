@@ -1,6 +1,54 @@
+from __future__ import annotations
+
 import pandas as pd
 import numpy as np
-from typing import List, Dict, Any
+from dataclasses import dataclass
+from typing import List, Dict, Any, NamedTuple
+
+
+@dataclass
+class SalesRecord:
+    date: str
+    store_id: str
+    revenue: float
+    orders: float
+    customers: float
+    avg_ticket: float
+    channel: str
+    weather: str
+    promo_flag: int
+
+
+def sales_factor_breakdown(records: list[SalesRecord]) -> dict:
+    """매출 요인 분해 - 지배 요인 및 상위 3개 요인 반환"""
+    if len(records) < 2:
+        return {"dominant_factor": "revenue", "top_factors": ["revenue", "orders", "customers"], "revenue_delta_pct": 0.0}
+
+    revenues = [r.revenue for r in records]
+    orders = [r.orders for r in records]
+    customers = [r.customers for r in records]
+    avg_tickets = [r.avg_ticket for r in records]
+    promo_flags = [r.promo_flag for r in records]
+
+    def delta_pct(values: list[float]) -> float:
+        if len(values) < 2 or values[0] == 0:
+            return 0.0
+        return (values[-1] - values[0]) / values[0] * 100
+
+    revenue_delta = delta_pct(revenues)
+    factor_impacts = {
+        "customers": abs(delta_pct(customers)) * 0.45,
+        "avg_ticket": abs(delta_pct(avg_tickets)) * 0.35,
+        "channel_mix": abs(delta_pct(orders)) * 0.15,
+        "promo": float(sum(promo_flags)) / max(len(promo_flags), 1) * 5.0,
+    }
+    sorted_factors = sorted(factor_impacts, key=factor_impacts.get, reverse=True)
+    return {
+        "dominant_factor": sorted_factors[0],
+        "top_factors": sorted_factors[:3],
+        "revenue_delta_pct": round(revenue_delta, 2),
+    }
+
 
 class SalesTrendFeature:
     """

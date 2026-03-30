@@ -1,6 +1,30 @@
+from __future__ import annotations
+
 import pandas as pd
 import numpy as np
 from typing import List, Dict, Any
+
+
+def anomaly_probability(amount: float, group_amounts: list[float]) -> float:
+    """Z-score 기반 이상 확률 산출 (0~1)"""
+    if len(group_amounts) < 2:
+        return 0.5
+    mean = float(np.mean(group_amounts))
+    std = float(np.std(group_amounts))
+    if std == 0:
+        return 0.0
+    z = abs((amount - mean) / std)
+    return round(min(z / 3.0, 1.0), 4)
+
+
+def classify_anomaly(probability: float) -> str:
+    """이상 확률 기반 심각도 분류"""
+    if probability >= 0.7:
+        return "high"
+    if probability >= 0.4:
+        return "medium"
+    return "low"
+
 
 class AnomalyFeature:
     """

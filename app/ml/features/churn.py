@@ -1,7 +1,42 @@
+from __future__ import annotations
+
 import pandas as pd
 import numpy as np
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import List, Dict, Any
+
+
+@dataclass
+class ChurnFeatures:
+    customer_id: str
+    store_id: str
+    recency: float        # 마지막 방문 이후 경과 일수
+    frequency: float      # 총 방문 횟수
+    monetary: float       # 누적 결제 금액
+    last_visit_days: float  # 마지막 방문일 기준 경과 일수
+    coupon_use_rate: float  # 쿠폰 사용률 (0~1)
+
+
+def build_churn_score(features: ChurnFeatures) -> float:
+    """이탈 위험 점수 산출 (0~100)"""
+    # recency 기반: 방문 안 한 기간이 길수록 점수 상승
+    recency_score = min(features.recency / 60.0, 1.0) * 50
+    # frequency 기반: 방문 빈도가 낮을수록 점수 상승
+    freq_score = max(0.0, 1.0 - features.frequency / 10.0) * 30
+    # 쿠폰 반응 없을수록 점수 상승
+    coupon_score = (1.0 - features.coupon_use_rate) * 20
+    return round(recency_score + freq_score + coupon_score, 2)
+
+
+def classify_churn_risk(score: float) -> str:
+    """이탈 위험도 분류"""
+    if score >= 65:
+        return "high"
+    if score >= 40:
+        return "medium"
+    return "low"
+
 
 class ChurnFeature:
     """
